@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Palíndromos y Más</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        input, button, textarea {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 1em;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+        #result, #numberResult, #vowelResult, #vowelCountResult {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Punto 1</h1>
+    <h2>¿Es un Palíndromo?</h2>
+    <p>Introduce una palabra o frase para verificar si es un palíndromo:</p>
+    <input type="text" id="textInput" placeholder="Escribe aquí..." />
+    <button onclick="checkPalindrome()">Verificar</button>
+    <div id="result"></div>
+    <hr>
+
+    <h1>Punto 2</h1>
+    <h2>Número Mayor</h2>
+    <p>Introduce dos números para determinar cuál es mayor:</p>
+    <input type="number" id="number1" placeholder="Primer número" />
+    <input type="number" id="number2" placeholder="Segundo número" />
+    <button onclick="compareNumbers()">Comparar</button>
+    <div id="numberResult"></div>
+    <hr>
+
+    <h1>Punto 3</h1>
+    <h2>Escribir Vocales</h2>
+    <p>Introduce una frase para mostrar las vocales que contiene:</p>
+    <input type="text" id="vowelInput" placeholder="Escribe una frase..." />
+    <button onclick="detectVowels()">Detectar Vocales</button>
+    <div id="vowelResult"></div>
+    <hr>
+
+    <h1>Punto 4</h1>
+    <h2>Contar Vocales</h2>
+    <p>Introduce una frase para contar cuántas veces aparece cada vocal:</p>
+    <input type="text" id="vowelCountInput" placeholder="Escribe una frase..." />
+    <button onclick="countVowels()">Contar Vocales</button>
+    <div id="vowelCountResult"></div>
+    <hr>
+
+    <h1>Punto 5</h1>
+	<br>
+    <h2>AJAX</h2>
+    <h3>URL Actual</h3>
+    <input type="text" id="urlInput" />
+    <button onclick="fetchContent()">Mostrar Contenidos</button>
+
+    <h3>Zona de Contenidos</h3>
+    <textarea id="contentArea" readonly></textarea>
+
+    <h3>Zona de Estados</h3>
+    <pre id="statusArea">No iniciada</pre>
+
+    <h3>Cabeceras HTTP de la Respuesta</h3>
+    <textarea id="headersArea" readonly></textarea>
+
+    <h3>Código de Estado</h3>
+    <pre id="statusCodeArea"></pre>
+
+    <script>
+        // Función palíndromo
+        function checkPalindrome() {
+            const inputText = document.getElementById('textInput').value;
+            const cleanedText = inputText.toLowerCase().replace(/[^a-z0-9áéíóúü]/g, '');
+            const isPalindrome = cleanedText === cleanedText.split('').reverse().join('');
+            const resultDiv = document.getElementById('result');
+
+            if (isPalindrome) {
+                resultDiv.textContent = `"${inputText}" es un palíndromo. 😊`;
+                resultDiv.style.color = "green";
+            } else {
+                resultDiv.textContent = `"${inputText}" no es un palíndromo. 😒`;
+                resultDiv.style.color = "red";
+            }
+        }
+
+        // Función para comparar dos números
+        function compareNumbers() {
+            const num1 = parseFloat(document.getElementById('number1').value);
+            const num2 = parseFloat(document.getElementById('number2').value);
+            const resultDiv = document.getElementById('numberResult');
+
+            if (isNaN(num1) || isNaN(num2)) {
+                resultDiv.textContent = "Por favor, ingresa valores numéricos válidos.";
+                resultDiv.style.color = "red";
+            } else if (num1 > num2) {
+                resultDiv.textContent = `El número mayor es: ${num1}.`;
+                resultDiv.style.color = "blue";
+            } else if (num2 > num1) {
+                resultDiv.textContent = `El número mayor es: ${num2}.`;
+                resultDiv.style.color = "blue";
+            } else {
+                resultDiv.textContent = "Ambos números son iguales.";
+                resultDiv.style.color = "orange";
+            }
+        }
+
+        // Función para detectar vocales en una frase
+        function detectVowels() {
+            const inputText = document.getElementById('vowelInput').value;
+            const vowels = inputText.toLowerCase().match(/[aeiouáéíóúü]/g);
+            const resultDiv = document.getElementById('vowelResult');
+
+            if (vowels) {
+                resultDiv.textContent = `Vocales encontradas: ${[...new Set(vowels)].join(', ')}.`;
+                resultDiv.style.color = "green";
+            } else {
+                resultDiv.textContent = "No se encontraron vocales.";
+                resultDiv.style.color = "red";
+            }
+        }
+
+        // Función para contar vocales
+        function countVowels() {
+            const inputText = document.getElementById('vowelCountInput').value;
+            const vowels = inputText.toLowerCase().match(/[aeiouáéíóúü]/g);
+            const resultDiv = document.getElementById('vowelCountResult');
+
+            if (vowels) {
+                const counts = vowels.reduce((acc, vowel) => {
+                    acc[vowel] = (acc[vowel] || 0) + 1;
+                    return acc;
+                }, {});
+                resultDiv.textContent = `Conteo de vocales: ${Object.entries(counts).map(([v, c]) => `${v}: ${c}`).join(', ')}.`;
+                resultDiv.style.color = "green";
+            } else {
+                resultDiv.textContent = "No se encontraron vocales.";
+                resultDiv.style.color = "red";
+            }
+        }
+
+        // Función AJAX
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("urlInput").value = window.location.href;
+        });
+
+        function fetchContent() {
+            const url = document.getElementById("urlInput").value;
+            const xhr = new XMLHttpRequest();
+            const contentArea = document.getElementById("contentArea");
+            const statusArea = document.getElementById("statusArea");
+            const headersArea = document.getElementById("headersArea");
+            const statusCodeArea = document.getElementById("statusCodeArea");
+
+            xhr.onreadystatechange = () => {
+                const states = ["No iniciada⛔", "Cargando", "Cargada✅", "Interactiva😁", "Completada😊"];
+                statusArea.textContent = `Estado: ${states[xhr.readyState] || "Desconocido"}`;
+            };
+
+            xhr.onload = () => {
+                contentArea.value = xhr.responseText;
+                headersArea.value = xhr.getAllResponseHeaders();
+                statusCodeArea.textContent = `Código: ${xhr.status} (${xhr.statusText})`;
+            };
+
+            xhr.onerror = () => {
+                contentArea.value = "Error al realizar la solicitud.❌";
+                headersArea.value = "";
+                statusCodeArea.textContent = "Error: no se pudo completar la solicitud.🚫";
+            };
+
+            xhr.open("GET", url, true);
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
